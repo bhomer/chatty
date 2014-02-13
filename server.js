@@ -1,8 +1,8 @@
 //localhost = 127.0.0.1
 
 var messages = [
-    "welcome to Pirahna Chat",
-    "This is the second message"
+    {message: "welcome to Pirahna Chat"},
+    {message: "This is the second message"}
 ];
 
 onRequest = function(req, res) {
@@ -24,15 +24,28 @@ onRequest = function(req, res) {
 //            chunkNumber++;
         });
         req.on('end', function() {
+            console.log("Type of postData:", typeof postData);
+            console.log("Type of JSON.parse(postData):", typeof JSON.parse(postData));
+            var msg = JSON.parse(postData);
 //            console.log("\n\nchunked: "+chunkNumber);
-            console.log("Got, POST data:");
+//            console.log("Got, POST data:");
             var postObject = JSON.parse(postData);
-            messages.push(postObject.message);
+            messages.push(postObject);
             res.end(JSON.stringify("Successfully saved message"));
 //            console.log(JSON.parse(postData));
             
-                        });
-        } else {
+        });
+    }
+    else if (req.method === 'OPTIONS') {
+        res.writeHead(200, {
+            'Connection': 'close',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS, GET, POST',
+            'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+          });
+        res.end("{}");
+    } else {
         res.end("should be using the get request method"+ "instead of the "+req.method+" method!");
     }
 }
